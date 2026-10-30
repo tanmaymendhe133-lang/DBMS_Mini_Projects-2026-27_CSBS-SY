@@ -92,3 +92,144 @@ ON Marks.student_id = Students.student_id
 JOIN Courses
 ON Marks.course_id = Courses.course_id
 WHERE Marks.marks_obtained > 80;
+
+
+import mysql.connector
+
+# Connect Python to MySQL
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="YOUR_MYSQL_PASSWORD",
+    database="StudentManagement"
+)
+
+cursor = db.cursor()
+
+# Add Student
+def add_student():
+    print("\n--- Add Student ---")
+
+    name = input("Enter Name: ")
+    roll = input("Enter Roll Number: ")
+    email = input("Enter Email: ")
+    phone = input("Enter Phone: ")
+    department = input("Enter Department: ")
+    semester = int(input("Enter Semester: "))
+
+    sql = """INSERT INTO Students
+    (name, roll_no, email, phone, department, semester)
+    VALUES (%s, %s, %s, %s, %s, %s)"""
+
+    values = (name, roll, email, phone, department, semester)
+
+    try:
+        cursor.execute(sql, values)
+        db.commit()
+        print("Student Added Successfully!")
+    except mysql.connector.Error as err:
+        db.rollback()
+        print("Error:", err)
+
+
+# View All Students
+def view_students():
+    print("\n--- Student Records ---")
+
+    cursor.execute("SELECT * FROM Students")
+    records = cursor.fetchall()
+
+    for student in records:
+        print(student)
+
+
+# Search Student
+def search_student():
+    roll = input("Enter Roll Number: ")
+
+    cursor.execute(
+        "SELECT * FROM Students WHERE roll_no = %s",
+        (roll,)
+    )
+
+    result = cursor.fetchone()
+
+    if result:
+        print("Student Found:", result)
+    else:
+        print("Student Not Found!")
+
+
+# Update Student
+def update_student():
+    roll = input("Enter Roll Number: ")
+    phone = input("Enter New Phone Number: ")
+
+    cursor.execute(
+        "UPDATE Students SET phone = %s WHERE roll_no = %s",
+        (phone, roll)
+    )
+
+    db.commit()
+
+    if cursor.rowcount > 0:
+        print("Student Updated Successfully!")
+    else:
+        print("Student Not Found!")
+
+
+# Delete Student
+def delete_student():
+    roll = input("Enter Roll Number: ")
+
+    cursor.execute(
+        "DELETE FROM Students WHERE roll_no = %s",
+        (roll,)
+    )
+
+    db.commit()
+
+    if cursor.rowcount > 0:
+        print("Student Deleted Successfully!")
+    else:
+        print("Student Not Found!")
+
+
+# Main Menu
+while True:
+
+    print("\n===== STUDENT MANAGEMENT SYSTEM =====")
+    print("1. Add Student")
+    print("2. View Students")
+    print("3. Search Student")
+    print("4. Update Student")
+    print("5. Delete Student")
+    print("6. Exit")
+
+    choice = input("Enter Your Choice: ")
+
+    if choice == "1":
+        add_student()
+
+    elif choice == "2":
+        view_students()
+
+    elif choice == "3":
+        search_student()
+
+    elif choice == "4":
+        update_student()
+
+    elif choice == "5":
+        delete_student()
+
+    elif choice == "6":
+        print("Thank You!")
+        break
+
+    else:
+        print("Invalid Choice! Try Again.")
+
+cursor.close()
+db.close()
+
