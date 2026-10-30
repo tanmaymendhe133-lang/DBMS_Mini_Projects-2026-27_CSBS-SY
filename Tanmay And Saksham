@@ -1,1 +1,94 @@
+CREATE DATABASE StudentManagement;
 
+USE StudentManagement;
+
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    roll_no VARCHAR(20) UNIQUE NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    department VARCHAR(50),
+    semester INT
+);
+
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(100) NOT NULL,
+    course_code VARCHAR(20) UNIQUE NOT NULL,
+    credits INT
+);
+
+CREATE TABLE Marks (
+    mark_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    marks_obtained INT,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+INSERT INTO Students
+(name, roll_no, email, phone, department, semester)
+VALUES
+('Tanmay Mendhe', 'RBT25CB033', 'tanmay@gmail.com', '9876543210', 'CSBS', 3),
+('Saksham Badadhe', 'RBT25CB048', 'saksham@gmail.com', '9876543211', 'CSBS', 3),
+('Girish Chinchpure', 'RBT25CB034', 'girish@gmail.com', '9876543212', 'CSBS', 3),
+('Rahul Sharma', 'RBT25CB035', 'rahul@gmail.com', '9876543213', 'CSBS', 3);
+
+INSERT INTO Courses
+(course_name, course_code, credits)
+VALUES
+('Database Management System', 'DBMS101', 4),
+('Java Programming', 'JAVA101', 4),
+('Computer Networks', 'CN101', 3),
+('Mathematics', 'MATH101', 3);
+
+INSERT INTO Marks
+(student_id, course_id, marks_obtained)
+VALUES
+(1, 1, 85),
+(1, 2, 90),
+(1, 3, 78),
+(2, 1, 80),
+(2, 2, 88),
+(3, 1, 92),
+(3, 3, 86),
+(4, 4, 75);
+
+SELECT * FROM Students;
+
+SELECT * FROM Students
+WHERE roll_no = 'RBT25CB033';
+
+UPDATE Students
+SET phone = '9999999999'
+WHERE roll_no = 'RBT25CB033';
+
+DELETE FROM Marks
+WHERE student_id = 4;
+
+DELETE FROM Students
+WHERE student_id = 4;
+
+SELECT
+    Students.name,
+    Students.roll_no,
+    Courses.course_name,
+    Marks.marks_obtained
+FROM Marks
+JOIN Students
+ON Marks.student_id = Students.student_id
+JOIN Courses
+ON Marks.course_id = Courses.course_id;
+
+SELECT
+    Students.name,
+    Courses.course_name,
+    Marks.marks_obtained
+FROM Marks
+JOIN Students
+ON Marks.student_id = Students.student_id
+JOIN Courses
+ON Marks.course_id = Courses.course_id
+WHERE Marks.marks_obtained > 80;
